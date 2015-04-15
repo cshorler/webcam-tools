@@ -138,16 +138,7 @@
 				<control id="logitech_video_processing">
 					<entity>UVC_GUID_LOGITECH_VIDEO_PIPE</entity>
 					<selector>XU_COLOR_PROCESSING_DISABLE</selector>
-					<index>4</index>
 					<size>1</size>
-					<requests>
-						<request>SET_CUR</request>
-						<request>GET_CUR</request>
-						<request>GET_MIN</request>
-						<request>GET_MAX</request>
-						<request>GET_RES</request>
-						<request>GET_DEF</request>
-					</requests>
 					<description>
 						Enable or disable the color processing pipeline within the camera.
 
@@ -159,16 +150,7 @@
 				<control id="logitech_video_raw_bpp">
 					<entity>UVC_GUID_LOGITECH_VIDEO_PIPE</entity>
 					<selector>XU_RAW_DATA_BITS_PER_PIXEL</selector>
-					<index>7</index>
 					<size>1</size>
-					<requests>
-						<request>SET_CUR</request>
-						<request>GET_CUR</request>
-						<request>GET_MIN</request>
-						<request>GET_MAX</request>
-						<request>GET_RES</request>
-						<request>GET_DEF</request>
-					</requests>
 					<description>
 						Specify the number of bits per pixel for raw data.
 
@@ -181,16 +163,7 @@
 				<control id="logitech_userhw_led1">
 					<entity>UVC_GUID_LOGITECH_USER_HW_CONTROL</entity>
 					<selector>XU_HW_CONTROL_LED1</selector>
-					<index>0</index>
 					<size>3</size>
-					<requests>
-						<request>SET_CUR</request>
-						<request>GET_CUR</request>
-						<request>GET_MIN</request>
-						<request>GET_MAX</request>
-						<request>GET_RES</request>
-						<request>GET_DEF</request>
-					</requests>
 					<description>
 						Allows control over the state of the first LED.
 						
@@ -239,15 +212,7 @@
 				<control id="logitech_motor_focus">
 					<entity>UVC_GUID_LOGITECH_MOTOR_CONTROL</entity>
 					<selector>XU_MOTORCONTROL_FOCUS</selector>
-					<index>2</index>
 					<size>6</size>
-					<requests>
-						<request>SET_CUR</request>
-						<request>GET_CUR</request>
-						<request>GET_MIN</request>
-						<request>GET_MAX</request>
-						<request>GET_DEF</request>
-					</requests>
 					<description>
 						Allows the control of focus motor movements for camera models that support mechanical focus.
 
@@ -276,14 +241,7 @@
 				<control id="logitech_motor_pantilt_relative">
 					<entity>UVC_GUID_LOGITECH_MOTOR_CONTROL</entity>
 					<selector>XU_MOTORCONTROL_PANTILT_RELATIVE</selector>
-					<index>0</index>
 					<size>4</size>
-					<requests>
-						<request>SET_CUR</request>
-						<request>GET_MIN</request>
-						<request>GET_MAX</request>
-						<request>GET_DEF</request>
-					</requests>
 					<description>
 						Allows the control of pan/tilt motor movements for camera models that support mechanical pan/tilt.
 
@@ -295,14 +253,7 @@
 				<control id="logitech_motor_pantilt_reset">
 					<entity>UVC_GUID_LOGITECH_MOTOR_CONTROL</entity>
 					<selector>XU_MOTORCONTROL_PANTILT_RESET</selector>
-					<index>1</index>
 					<size>1</size>
-					<requests>
-						<request>SET_CUR</request>
-						<request>GET_MIN</request>
-						<request>GET_MAX</request>
-						<request>GET_DEF</request>
-					</requests>
 					<description>
 						Reset the pan/tilt motors to their original position for camera models that support mechanical pan/tilt.
 

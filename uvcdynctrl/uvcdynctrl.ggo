@@ -1,0 +1,22 @@
+# GNU Gengetopt input file for uvcdynctrl
+
+# Program information
+# Note that we don't set the version here. We retrieve the version from
+# the VERSION constant in config.h.
+package "uvcdynctrl"
+#version "0.0"
+purpose "Manage dynamic controls in uvcvideo"
+
+# Action options (device independent)
+option		"list"		l	"List available cameras"				optional
+option		"import"	i	"Import dynamic controls from an XML file"	string typestr="filename" optional
+
+# Options
+option		"verbose"	v	"Enable verbose output"					flag off
+option		"device"	d	"Specify the device to use"				string typestr="devicename" optional default="video0"
+
+# Action options (device dependent)
+option		"clist"		c	"List available controls"				optional
+option		"get"		g	"Retrieve the current control value"	string typestr="control" optional
+option		"set"		s	"Set a new control value\n(For negative values: -s 'My Control' -- -42)"		string typestr="control" optional
+option		"formats"	f	"List available frame formats"			optional

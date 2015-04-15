@@ -1,0 +1,9 @@
+###################################################################################################
+# Rules for adding dynamic UVC extension unit controls to UVC devices.
+#
+# Note that the DRIVERS clause only works in newer versions of udev. For older versions the clause
+# never matches, making the script a no-op.
+# udev versions confirmed to work: 141 (Ubuntu 9.04), 142 (Ubuntu 9.10)
+# udev versions confirmed not to work: 117 (Ubuntu 8.04)
+###################################################################################################
+ACTION=="add", SUBSYSTEM=="video4linux", DRIVERS=="uvcvideo", RUN+="/lib/udev/uvcdynctrl"

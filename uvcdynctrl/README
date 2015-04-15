@@ -1,0 +1,108 @@
+uvcdynctrl - Manage dynamic controls in uvcvideo
+================================================
+
+Introduction
+------------
+
+For an introduction to dynamic controls you should first read the dynctrl.txt
+that comes with the Linux UVC driver. You can find it here:
+
+http://svn.berlios.de/svnroot/repos/linux-uvc/linux-uvc/trunk/
+
+The combination of uvcdynctrl and libwebcam allows to manage these dynamic
+controls from user space. While libwebcam contains the actual implementation,
+uvcdynctrl presents a command line interface to do so.
+
+Currently only the UVCIOC_CTRL_ADD and UVCIOC_CTRL_MAP ioctls are supported.
+Support for the remaining functions is planned. The documentation is not really
+complete at this time. In particular, the XML format that is used to describe
+dynamic controls is undocumented except for a sample file and an XML schema.
+This will be fixed very soon.
+
+uvcdynctrl is designed to eventually work together with udev, so that control
+mappings are automatically added whenever a UVC device is plugged and a
+matching dynamic controls configuration file is available.
+
+Apart from the dynamic controls feature uvcdynctrl also provides a few handy
+functions that illustrate the power of libwebcam. Check out the built-in
+command line help for details.
+
+
+udev support
+------------
+
+The uvcdynctrl package contains udev support, i.e. a udev rule file and a
+helper script that calls uvcdynctrl to import the appropriate XML file when
+a camera is connected.
+
+If you run "make install" as root, the following udev-related files will be
+installed:
+
+  /etc/udev/rules.d/80-uvcdynctrl.rules (rule for V4L devices)
+  /lib/udev/uvcdynctrl (helper script to launch uvcdynctrl)
+  /etc/udev/data/046d/logitech.xml (dynamic control configuration for Logitech
+                                   devices)
+
+These paths are hardcoded in uvcdynctrl/CMakeLists.txt and have only been
+tested on Ubuntu with udev versions >= 141. If your distribution uses different
+paths, you need to make changes to that file before running the installation.
+
+If you're using an older version of udev you may want to try the udev scripts
+of an older version which is tagged as "0.1.3-pre" and can be found here:
+http://svn.quickcamteam.net/svn/qct/webcam-tools/tags/0.1.3-pre/
+
+Please send us feedback (preferrably through the QuickCam Team forum, see the
+main README file for the link) about the udev functionality, especially on
+non-Ubuntu systems.
+
+If you want to debug the uvcdynctrl udev script, you can find some basic debug
+output in /var/log/uvcdynctrl-udev.log.
+
+
+Change log
+----------
+
+0.2.1:
+- Reorganized the directory layout and build system.
+- Exit with a non-zero code if errors occur while getting or setting controls.
+- Improved udev support (udev >= 141 is required now).
+
+0.2 (2008-01-29): 
+- Experimental support for udev (support script and rules).
+- Added a new option -f or --formats to list a device's frame format list
+  (pixel formats, frame sizes, and frame intervals).
+- Make use of the improved error message reporting in libwebcam.
+- Added support for displaying processing statistics in verbose mode.
+- Support for the new informational messages (dynctrl).
+- Added a hint to the quick help on how to set negative control values.
+- Fix: Import (-i) no longer needs a valid device to be specified (or the
+  default video0 to be present).
+
+0.1: Initial release
+
+
+Building, questions, and feedback
+---------------------------------
+
+Please see the README file in the top level directory for building
+instructions and how to contact the developers.
+
+
+Copyright and license
+---------------------
+
+Copyright (c) 2006-2010 Logitech.
+
+uvcdynctrl is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+uvcdynctrl is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with uvcdynctrl.  If not, see <http://www.gnu.org/licenses/>.
+

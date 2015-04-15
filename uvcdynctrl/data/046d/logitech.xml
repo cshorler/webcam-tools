@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<config version="1.0"
+	xmlns="http://www.quickcamteam.net"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.quickcamteam.net uvcconfig.xsd"
+>
+
+	<meta>
+		<version>1.0</version>
+		<author>Martin Rubli, Logitech</author>
+		<contact>http://www.quickcamteam.net/</contact>
+		<revision>0.17</revision>
+		<copyright>Copyright (c) 2006-2008 Logitech</copyright>
+		<history>
+			0.17, 2008-10-17:
+			- Mark the GET_CUR request as supported for the XU_MOTORCONTROL_FOCUS control.
+		
+			0.16, 2008-03-07:
+			- Updated the values of V4L2_CID_PAN_RELATIVE and V4L2_CID_PAN_RELATIVE to work with the latest UVC driver (those values will be part of kernels >= 2.6.26).
+			- Support for two new controls defined by V4L2 starting from 2.6.26:V4L2_CID_PAN_RESET ('Pan Reset') and V4L2_CID_TILT_RESET ('Tilt reset').
+
+			0.15, 2007-12-13:
+			- Added a control to change the LED blink frequency.
+			- Added the two controls required for enabling Bayer mode (Disable video processing and Raw bits per pixel).
+
+			0.14, 2007-11-19:
+			- Fixed the bitmap indices which were off by one.
+
+			0.13, 2007-11-16:
+			- Added focus motor control for cameras that support it (QuickCam Pro 9000, QuickCam Pro for Notebooks, QuickCam Orbit/Sphere AF).
+			- Added the pan/tilt reset control for the QuickCam Orbit/Sphere series.
+			- Added a control to change the LED mode.
+
+			0.12, 2007-11-02:
+			- Initial release to the public
+		</history>
+	</meta>
+
+
+	<constants>
+		<!-- Extension unit GUIDs (up to 2007) -->
+		<constant type="guid">
+			<id>UVC_GUID_LOGITECH_USER_HW_CONTROL</id>
+			<value>63610682-5070-49ab-b8cc-b3855e8d221f</value>
+		</constant>
+		<constant type="guid">
+			<id>UVC_GUID_LOGITECH_VIDEO_PIPE</id>
+			<value>63610682-5070-49ab-b8cc-b3855e8d2250</value>
+		</constant>
+		<constant type="guid">
+			<id>UVC_GUID_LOGITECH_MOTOR_CONTROL</id>
+			<value>63610682-5070-49ab-b8cc-b3855e8d2256</value>
+		</constant>
+
+		<!-- Control selectors for User Hardware Control -->
+		<constant type="integer">
+			<id>XU_HW_CONTROL_LED1</id>
+			<value>1</value>
+		</constant>
+
+		<!-- Control selectors for Video Pipe -->
+		<constant type="integer">
+			<id>XU_COLOR_PROCESSING_DISABLE</id>
+			<value>5</value>
+		</constant>
+		<constant type="integer">
+			<id>XU_RAW_DATA_BITS_PER_PIXEL</id>
+			<value>8</value>
+		</constant>
+
+		<!-- Control selectors for Motor Control -->
+		<constant type="integer">
+			<id>XU_MOTORCONTROL_PANTILT_RELATIVE</id>
+			<value>1</value>
+		</constant>
+		<constant type="integer">
+			<id>XU_MOTORCONTROL_PANTILT_RESET</id>
+			<value>2</value>
+		</constant>
+		<constant type="integer">
+			<id>XU_MOTORCONTROL_FOCUS</id>
+			<value>3</value>
+		</constant>
+
+		<!-- V4L2 control identifiers -->
+		<constant type="integer">
+			<id>V4L2_CID_PAN_RELATIVE</id>
+			<value>0x009A0904</value><!-- V4L2_CID_CAMERA_CLASS_BASE + 4 -->
+		</constant>
+		<constant type="integer">
+			<id>V4L2_CID_TILT_RELATIVE</id>
+			<value>0x009A0905</value><!-- V4L2_CID_CAMERA_CLASS_BASE + 5 -->
+		</constant>
+		<constant type="integer">
+			<id>V4L2_CID_PANTILT_RESET</id>
+			<value>0x0A046D03</value>
+		</constant>
+		<constant type="integer">
+			<id>V4L2_CID_PAN_RESET</id>
+			<value>0x009A0906</value><!-- V4L2_CID_CAMERA_CLASS_BASE + 6 -->
+		</constant>
+		<constant type="integer">
+			<id>V4L2_CID_TILT_RESET</id>
+			<value>0x009A0907</value><!-- V4L2_CID_CAMERA_CLASS_BASE + 7 -->
+		</constant>
+		<constant type="integer">
+			<id>V4L2_CID_FOCUS</id>
+			<value>0x0A046D04</value>
+		</constant>
+		<constant type="integer">
+			<id>V4L2_CID_LED1_MODE</id>
+			<value>0x0A046D05</value>
+		</constant>
+		<constant type="integer">
+			<id>V4L2_CID_LED1_FREQUENCY</id>
+			<value>0x0A046D06</value>
+		</constant>
+		<constant type="integer">
+			<id>V4L2_CID_DISABLE_PROCESSING</id>
+			<value>0x0A046D71</value>
+		</constant>
+		<constant type="integer">
+			<id>V4L2_CID_RAW_BITS_PER_PIXEL</id>
+			<value>0x0A046D72</value>
+		</constant>
+	</constants>
+	
+
+	<!-- Generic Logitech controls -->
+	<devices>
+		<device>
+			<match>
+				<vendor_id>0x046d</vendor_id>
+			</match>
+			
+			<controls>
+				<control id="logitech_video_processing">
+					<entity>UVC_GUID_LOGITECH_VIDEO_PIPE</entity>
+					<selector>XU_COLOR_PROCESSING_DISABLE</selector>
+					<index>4</index>
+					<size>1</size>
+					<requests>
+						<request>SET_CUR</request>
+						<request>GET_CUR</request>
+						<request>GET_MIN</request>
+						<request>GET_MAX</request>
+						<request>GET_RES</request>
+						<request>GET_DEF</request>
+					</requests>
+					<description>
+						Enable or disable the color processing pipeline within the camera.
+
+						0 = color processing enabled (default)
+						1 = color processing disabled
+					</description>
+				</control>
+
+				<control id="logitech_video_raw_bpp">
+					<entity>UVC_GUID_LOGITECH_VIDEO_PIPE</entity>
+					<selector>XU_RAW_DATA_BITS_PER_PIXEL</selector>
+					<index>7</index>
+					<size>1</size>
+					<requests>
+						<request>SET_CUR</request>
+						<request>GET_CUR</request>
+						<request>GET_MIN</request>
+						<request>GET_MAX</request>
+						<request>GET_RES</request>
+						<request>GET_DEF</request>
+					</requests>
+					<description>
+						Specify the number of bits per pixel for raw data.
+
+						This value is only relevant if XU_COLOR_PROCESSING_DISABLE is set to 0.
+						0 = 8 bits per pixel (default)
+						1 = 10 bits per pixel
+					</description>
+				</control>
+
+				<control id="logitech_userhw_led1">
+					<entity>UVC_GUID_LOGITECH_USER_HW_CONTROL</entity>
+					<selector>XU_HW_CONTROL_LED1</selector>
+					<index>0</index>
+					<size>3</size>
+					<requests>
+						<request>SET_CUR</request>
+						<request>GET_CUR</request>
+						<request>GET_MIN</request>
+						<request>GET_MAX</request>
+						<request>GET_RES</request>
+						<request>GET_DEF</request>
+					</requests>
+					<description>
+						Allows control over the state of the first LED.
+						
+						Bits 0 to 7 represent the LED mode.
+						Currently, the following modes are available:
+						- 0: Off. The LED is never illuminated, whether or not the device is streaming video.
+						- 1: On. The LED is always illuminated, whether or not the device is streaming video.
+						- 2: Blinking. The LED blinks, whether or not the device is streaming video.
+						- 3: Auto. The LED is in control of the device. Typically this means that means that is is illuminated when streaming video and off when not streaming video.
+
+						Bits 16 to 23 represent the LED frequency.
+						The frequency value only influences the 'Blinking' mode.
+						It is expressed in units of 0.05 Hz and sets the blink frequency f.
+						The blink interval T = 1/f is defined as the time between two adjoining rising edges (or two adjoining falling edges).
+						The following table illustrates the relation between the LED frequency value used in bits 16 to 23, the physical blink frequency, and the physical blink interval.
+						+-------------------------------+------------------------+----------------------+
+						| Frequency value 20f [0.05 Hz] | Blink frequency f [Hz] | Blink interval T [s] |
+						+-------------------------------+------------------------+----------------------+
+						| 1                             | 0.05                   | 20                   |
+						| 2                             | 0.1                    | 10                   |
+						| 10                            | 0.5                    | 2                    |
+						| 20                            | 1                      | 1                    |
+						| 50                            | 2.5                    | 0.4                  |
+						| 100                           | 5                      | 0.2                  |
+						+-------------------------------+------------------------+----------------------+
+					</description>
+				</control>
+			</controls>
+		</device>
+	</devices>
+
+	<!-- Logitech controls for cameras with mechanical focus -->
+	<devices>
+		<device>
+			<match>
+				<vendor_id>0x046d</vendor_id>
+				<!-- Logitech QuickCam Pro 9000 -->
+				<product_id>0x0990</product_id>
+				<!-- Logitech QuickCam Pro for Notebooks -->
+				<product_id>0x0991</product_id>
+				<!-- Logitech QuickCam Orbit/Sphere AF -->
+				<product_id>0x0994</product_id>
+			</match>
+			
+			<controls>
+				<control id="logitech_motor_focus">
+					<entity>UVC_GUID_LOGITECH_MOTOR_CONTROL</entity>
+					<selector>XU_MOTORCONTROL_FOCUS</selector>
+					<index>2</index>
+					<size>6</size>
+					<requests>
+						<request>SET_CUR</request>
+						<request>GET_CUR</request>
+						<request>GET_MIN</request>
+						<request>GET_MAX</request>
+						<request>GET_DEF</request>
+					</requests>
+					<description>
+						Allows the control of focus motor movements for camera models that support mechanical focus.
+
+						Bits 0 to 7 allow selection of the desired lens position.
+						There are no physical units, instead, the focus range is spread over 256 logical units with 0 representing infinity focus and 255 being macro focus.
+					</description>
+				</control>
+			</controls>
+		</device>
+	</devices>
+
+	<!-- Logitech controls for cameras with mechanical pan/tilt -->
+	<devices>
+		<device>
+			<match>
+				<vendor_id>0x046d</vendor_id>
+				<!-- Logitech QuickCam Orbit/Sphere MP -->
+				<product_id>0x08c2</product_id>
+				<!-- Logitech QuickCam Orbit/Sphere MP (2006 model) -->
+				<product_id>0x08cc</product_id>
+				<!-- Logitech QuickCam Orbit/Sphere AF -->
+				<product_id>0x0994</product_id>
+			</match>
+
+			<controls>
+				<control id="logitech_motor_pantilt_relative">
+					<entity>UVC_GUID_LOGITECH_MOTOR_CONTROL</entity>
+					<selector>XU_MOTORCONTROL_PANTILT_RELATIVE</selector>
+					<index>0</index>
+					<size>4</size>
+					<requests>
+						<request>SET_CUR</request>
+						<request>GET_MIN</request>
+						<request>GET_MAX</request>
+						<request>GET_DEF</request>
+					</requests>
+					<description>
+						Allows the control of pan/tilt motor movements for camera models that support mechanical pan/tilt.
+
+						Bits 0 to 15 control pan, bits 16 to 31 control tilt.
+						The unit of the pan/tilt values is 1/64th of a degree and the resolution is 1 degree.
+					</description>
+				</control>
+
+				<control id="logitech_motor_pantilt_reset">
+					<entity>UVC_GUID_LOGITECH_MOTOR_CONTROL</entity>
+					<selector>XU_MOTORCONTROL_PANTILT_RESET</selector>
+					<index>1</index>
+					<size>1</size>
+					<requests>
+						<request>SET_CUR</request>
+						<request>GET_MIN</request>
+						<request>GET_MAX</request>
+						<request>GET_DEF</request>
+					</requests>
+					<description>
+						Reset the pan/tilt motors to their original position for camera models that support mechanical pan/tilt.
+
+						Setting bit 0 resets the pan position.
+						Setting bit 1 resets the tilt position.
+
+						Both bits can be set at the same time to reset both, pan and tilt, at the same time.
+					</description>
+				</control>
+			</controls>
+		</device>
+	</devices>
+
+
+	<!-- V4L2 mappings for the UVC controls defined above -->
+	<mappings>
+		<mapping>
+			<name>Pan (relative)</name>
+			<uvc>
+				<control_ref idref="logitech_motor_pantilt_relative"/>
+				<size>16</size>
+				<offset>0</offset>
+				<uvc_type>UVC_CTRL_DATA_TYPE_SIGNED</uvc_type>
+			</uvc>
+			<v4l2>
+				<id>V4L2_CID_PAN_RELATIVE</id>
+				<v4l2_type>V4L2_CTRL_TYPE_INTEGER</v4l2_type>
+			</v4l2>
+		</mapping>
+		
+		<mapping>
+			<name>Tilt (relative)</name>
+			<uvc>
+				<control_ref idref="logitech_motor_pantilt_relative"/>
+				<size>16</size>
+				<offset>16</offset>
+				<uvc_type>UVC_CTRL_DATA_TYPE_SIGNED</uvc_type>
+			</uvc>
+			<v4l2>
+				<id>V4L2_CID_TILT_RELATIVE</id>
+				<v4l2_type>V4L2_CTRL_TYPE_INTEGER</v4l2_type>
+			</v4l2>
+		</mapping>
+		
+		<mapping>
+			<name>Pan Reset</name>
+			<uvc>
+				<control_ref idref="logitech_motor_pantilt_reset"/>
+				<size>1</size>
+				<offset>0</offset>
+				<uvc_type>UVC_CTRL_DATA_TYPE_UNSIGNED</uvc_type>
+			</uvc>
+			<v4l2>
+				<id>V4L2_CID_PAN_RESET</id>
+				<v4l2_type>V4L2_CTRL_TYPE_INTEGER</v4l2_type>
+			</v4l2>
+		</mapping>
+		
+		<mapping>
+			<name>Tilt Reset</name>
+			<uvc>
+				<control_ref idref="logitech_motor_pantilt_reset"/>
+				<size>1</size>
+				<offset>1</offset>
+				<uvc_type>UVC_CTRL_DATA_TYPE_UNSIGNED</uvc_type>
+			</uvc>
+			<v4l2>
+				<id>V4L2_CID_TILT_RESET</id>
+				<v4l2_type>V4L2_CTRL_TYPE_INTEGER</v4l2_type>
+			</v4l2>
+		</mapping>
+		
+		<mapping>
+			<name>Pan/tilt Reset</name>
+			<uvc>
+				<control_ref idref="logitech_motor_pantilt_reset"/>
+				<size>8</size>
+				<offset>0</offset>
+				<uvc_type>UVC_CTRL_DATA_TYPE_UNSIGNED</uvc_type>
+			</uvc>
+			<v4l2>
+				<id>V4L2_CID_PANTILT_RESET</id>
+				<v4l2_type>V4L2_CTRL_TYPE_INTEGER</v4l2_type>
+			</v4l2>
+		</mapping>
+		
+		<mapping>
+			<name>Focus</name>
+			<uvc>
+				<control_ref idref="logitech_motor_focus"/>
+				<size>8</size>
+				<offset>0</offset>
+				<uvc_type>UVC_CTRL_DATA_TYPE_UNSIGNED</uvc_type>
+			</uvc>
+			<v4l2>
+				<id>V4L2_CID_FOCUS</id>
+				<v4l2_type>V4L2_CTRL_TYPE_INTEGER</v4l2_type>
+			</v4l2>
+		</mapping>
+		
+		<mapping>
+			<name>LED1 Mode</name>
+			<uvc>
+				<control_ref idref="logitech_userhw_led1"/>
+				<size>8</size>
+				<offset>0</offset>
+				<uvc_type>UVC_CTRL_DATA_TYPE_UNSIGNED</uvc_type>
+			</uvc>
+			<v4l2>
+				<id>V4L2_CID_LED1_MODE</id>
+				<v4l2_type>V4L2_CTRL_TYPE_INTEGER</v4l2_type>
+			</v4l2>
+		</mapping>
+		
+		<mapping>
+			<name>LED1 Frequency</name>
+			<uvc>
+				<control_ref idref="logitech_userhw_led1"/>
+				<size>8</size>
+				<offset>16</offset>
+				<uvc_type>UVC_CTRL_DATA_TYPE_UNSIGNED</uvc_type>
+			</uvc>
+			<v4l2>
+				<id>V4L2_CID_LED1_FREQUENCY</id>
+				<v4l2_type>V4L2_CTRL_TYPE_INTEGER</v4l2_type>
+			</v4l2>
+		</mapping>
+		
+		<mapping>
+			<name>Disable video processing</name>
+			<uvc>
+				<control_ref idref="logitech_video_processing"/>
+				<size>8</size>
+				<offset>0</offset>
+				<uvc_type>UVC_CTRL_DATA_TYPE_BOOLEAN</uvc_type>
+			</uvc>
+			<v4l2>
+				<id>V4L2_CID_DISABLE_PROCESSING</id>
+				<v4l2_type>V4L2_CTRL_TYPE_BOOLEAN</v4l2_type>
+			</v4l2>
+		</mapping>
+		
+		<mapping>
+			<name>Raw bits per pixel</name>
+			<uvc>
+				<control_ref idref="logitech_video_raw_bpp"/>
+				<size>8</size>
+				<offset>0</offset>
+				<uvc_type>UVC_CTRL_DATA_TYPE_UNSIGNED</uvc_type>
+			</uvc>
+			<v4l2>
+				<id>V4L2_CID_RAW_BITS_PER_PIXEL</id>
+				<v4l2_type>V4L2_CTRL_TYPE_INTEGER</v4l2_type>
+			</v4l2>
+		</mapping>
+	</mappings>
+</config>

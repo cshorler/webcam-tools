@@ -1,0 +1,98 @@
+#!/bin/sh
+###################################################################################################
+# udev helper script for UVC devices to support dynamic controls.
+#
+# Version: 0.2
+#
+# Note that version 0.2 no longer works with older versions of udev. This script should be
+# compatible with udev >= 141.
+# Also check 80-uvcdynctrl.rules for more information.
+###################################################################################################
+
+# Constants
+version=0.2
+
+# Run-time configuration
+xmlpath=/etc/udev/data
+debug=1
+uvcdynctrlpath=uvcdynctrl
+
+
+
+# Determine log destination
+if [ "$debug" != 0 ]; then
+	logfile=/var/log/uvcdynctrl-udev.log
+else
+	logfile=/dev/null
+fi
+
+# Write log header
+echo >> $logfile
+echo "==============================================================================" >> $logfile
+echo "uvcdynctrl script version $version running from '$0'" >> $logfile
+echo "Triggered at `date`" >> $logfile
+echo >> $logfile
+set >> $logfile
+echo >> $logfile
+
+# Check for the udev version and bail out if it's too old
+if [ -z "$ID_VENDOR_ID" ]; then
+	echo "ERROR: The ID_VENDOR_ID variable is not defined. You are probably using an older version of udev. Please upgrade to udev >= 141 or use version 0.1 of this script." >> $logfile
+	exit 2
+fi
+
+# Extract the VID and PID
+vid=$ID_VENDOR_ID
+pid=$ID_MODEL_ID
+echo "VID of new device: '$vid'" >> $logfile
+echo "PID of new device: '$pid'" >> $logfile
+if [ -z $vid ]; then
+	echo "ERROR: Unable to extract USB VID." >> $logfile
+	exit 3
+fi
+
+# Check whether the device is managed by the UVC driver
+if [ "$ID_USB_DRIVER" != "uvcvideo" ]; then
+	echo "ERROR: Device is not handled by uvcvideo but by '$ID_USB_DRIVER'." >> $logfile
+	if [ "$ID_USB_DRIVER" = "usb" ]; then
+		echo "Note: There is a known problem for older versions of the UVC driver where the physical device path reported by udev ('/sys$PHYSDEVPATH' in this case) points to the USB device instead of the USB interface. For these versions of the UVC driver dynamic controls are not supported anyway. Please update your uvcvideo driver to the latest version if you know that this device is a UVC device." >> $logfile
+	fi
+	exit 4
+fi
+
+# Make sure the vendor directory ($xmlpath/VID) exists
+vendordir="$xmlpath/$vid"
+if [ ! -d "$vendordir" ]; then
+	echo "ERROR: Vendor directory '$vendordir' not found." >> $logfile
+	exit 5
+fi
+
+# Look for device specific XML files ($xmlpath/VID/PID/*.xml)
+if [ ! -z $pid ]; then
+	productdir="$xmlpath/$vid/$pid"
+	if [ -d "$productdir" ]; then
+		for file in $productdir/*.xml; do
+			if [ -f "$file" ]; then
+				echo "Found product XML file: $file" >> $logfile
+				cmd="$uvcdynctrlpath -d $DEVNAME -i $file"
+				echo "Executing command: '$cmd'" >> $logfile
+				$cmd >> $logfile 2>&1
+			fi
+		done
+	fi
+fi
+
+# Look for vendor specific XML files ($xmlpath/VID/*.xml)
+for file in $vendordir/*.xml; do
+	if [ -f "$file" ]; then
+		echo "Found vendor XML file: $file" >> $logfile
+		cmd="$uvcdynctrlpath -d $DEVNAME -i $file"
+		echo "Executing command: '$cmd'" >> $logfile
+		$cmd >> $logfile 2>&1
+	fi
+done
+
+# Write log footer
+echo "==============================================================================" >> $logfile
+echo >> $logfile
+

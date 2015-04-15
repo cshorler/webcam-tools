@@ -1,0 +1,187 @@
+Webcam Library and Tools
+========================
+
+Introduction
+------------
+
+The webcam-tools package contains the following two components:
+- libwebcam    Webcam Library
+- uvcdynctrl   Manage dynamic controls in uvcvideo
+
+This README file contains information that is common to all of the above
+components. For component specific information please refer to the README
+files in the libwebcam/ and uvcdynctrl/ subdirectories.
+
+
+Versions
+--------
+
+Note that the latest versions of the Webcam Library, its API documentation, and
+the tools can always be found at the following address:
+
+QuickCam Team
+  http://www.quickcamteam.net/
+
+
+Dependencies
+------------
+
+The Webcam Tools have the following external dependencies:
+- Linux UVC driver (uvcvideo) interface header file or source files
+- LibXML 2 development files (usually from the libxml2-dev package)
+- gengetopt (optional)
+- V4L2 2.6.32 (optional)
+
+Linux UVC driver (uvcvideo) interface header file or source files:
+
+  Unless the USE_UVCVIDEO constant is disabled (it is enabled by default),
+  libwebcam needs the uvcvideo.h header file from the Linux UVC driver
+  (uvcvideo). If the build system cannot find the required header file the
+  following error is shown at build time:
+
+   "Linux UVC Driver include file (linux/uvcvideo.h or uvcvideo.h) not found.
+    Try adding -DUVCVIDEO_INCLUDE_PATH=...  to specify its path."
+
+  Starting with kernel 2.6.26 the uvcvideo driver is part of the kernel. You
+  can find it in the directory drivers/media/video/uvc. If your kernel is older
+  than that you may download a historic stand-alone version from the uvcvideo
+  project's home page at http://linux-uvc.berlios.de/ or directly from the
+  Subversion repository at:
+  http://svn.berlios.de/svnroot/repos/linux-uvc/linux-uvc/trunk/
+
+  Starting with kernel 2.6.38 or 2.6.39 (at the time of writing this isn't
+  clear yet) the uvcvideo.h header file has been made public and moved to the
+  standard include/linux/ directory. Therefore it is no longer necessary to
+  obtain the kernel sources. Installing the kernel headers is enough.
+
+  Either way, you need to add the path where uvcvideo.h is located to the CMake
+  UVCVIDEO_INCLUDE_PATH variable before calling cmake unless it is already
+  located in one of your default include directories:
+
+  # For pre-2.6.38/39 kernels
+  cmake -DUVCVIDEO_INCLUDE_PATH=.../linux/drivers/media/video/uvc ..
+
+  # For 2.6.38/39 kernels and newer without the kernel headers installed
+  cmake -DUVCVIDEO_INCLUDE_PATH=.../linux/include ..
+
+  The older methods using environment variables and CMAKE_INCLUDE_PATH are no
+  longer supported.
+
+gengetopt (optional):
+
+  The uvcdynctrl directory ships with the two files cmdline.[ch]. As long as
+  those are present, gnugetopt is not required. If they are missing, the build
+  process will try to create them with the help of gnugetopt.
+
+V4L2 2.6.32 (optional):
+
+  (Note that this is an advanced feature that most users won't need and doesn't
+  work without a modified uvcvideo driver.)
+
+  To take advantage of the raw/string control support version 2.6.32 of V4L2
+  is required. To be more specific: V4L2_CTRL_TYPE_STRING needs to be supported.
+  Whether this is the case is determined at build time and if string control
+  support is not present in your version of V4L2 the corresponding feature
+  in libwebcam is disabled. During the build process one of the following
+  messages is displayed indicating the result of the test:
+
+  ** Your V4L2 has V4L2_CTRL_TYPE_STRING support. Enabling raw control support.
+  ** Your V4L2 does NOT have V4L2_CTRL_TYPE_STRING support. Compiling WITHOUT
+     raw control support.
+
+  Note that the uvcvideo version that comes with 2.6.32 does not yet support
+  string controls. At the time of this writing support for it is being added
+  to the UVC driver, so future versions should support it, therefore allowing
+  V4L2 control values to be more than 4 bytes long.
+
+  If you need to specify the location of the V4L2 header files (videodev2.h)
+  explicitly you can use the V4L2_INCLUDE_PATH CMake variable like this:
+
+  cmake -DUVCVIDEO_INCLUDE_PATH=.../linux/include \
+    -DV4L2_INCLUDE_PATH=.../linux/include ..
+
+
+Building
+--------
+
+The build system is based on CMake. Because of the way CMake works, Makefiles
+do not ship with libwebcam, so you have to have CMake installed. Don't worry,
+though, you are likely to have much fewer illegible error messages than with
+the previous GNU Automake.
+
+Once you have CMake installed you can build and install it by running the
+following commands in the webcam-tools top level source directory:
+
+mkdir build
+cd build
+cmake ..
+make
+make install (as root)
+
+You need at least CMake 2.6, so if you are running Ubuntu 8.04 you need to
+enable the hardy-backports repository in /etc/apt/sources.list and update
+the 'cmake' package.
+
+CMake defaults to installing binaries and libraries to /usr/local. To use a
+different install prefix, you can add a command line parameter to 'cmake' like
+this:
+
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr
+
+If you prefer to leave the prefix alone, you should make sure that
+/usr/local/bin is in your path and LD_LIBRARY_PATH contains the /usr/local/lib
+directory.
+
+
+Packaging
+---------
+
+Packaging the binaries is a little unusual and doesn't use the normal
+'make package' way that CMake suggests. The reason for this is that we want
+libwebcam and uvcdynctrl in one build, but the CMake packager can only ever
+create one package per build. Because we want separate packages for the
+different components packing has to be launched separately for each component.
+There are two methods to accomplish this:
+
+Method A: Run CPack manually
+
+The necessary configuration files for running CPack are generated during the
+normal build from the CPackConfig.cmake.conf template in the common/build/
+directory. You can run cpack by specifying these as follows:
+
+1. Build the package as described above and make sure that the current
+   directory is still ./build (from where cmake was run).
+
+2. cpack --config libwebcam/CPackConfig.cmake
+   This creates a .tar.bz2 archive and a .deb package for libwebcam.
+
+3. cpack --config uvcdynctrl/CPackConfig.cmake
+   This creates a .tar.bz2 archive and a .deb package for uvcdynctrl.
+
+Method B: Run CMake for each component
+
+Instead of creating a 'build' directory at the top level and then running
+'cmake ..' you can do the same thing once under the libwebcam/ and once under
+the uvcdynctrl/ directory and then launch the packaging process:
+
+mkdir libwebcam/build
+cd libwebcam/build
+cmake ..
+make package
+
+cd ../..
+mkdir uvcdynctrl/build
+cd uvcdynctrl/build
+cmake ..
+make package
+
+
+Questions and feedback
+----------------------
+
+There is a forum for developers and users of the Webcam Library. Please feel
+free to post your questions and comments:
+
+QuickCam Team discussion forums
+  http://forums.quickcamteam.net/
+

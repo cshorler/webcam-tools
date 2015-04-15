@@ -1,0 +1,45 @@
+/**
+\defgroup libwebcam			libwebcam (Webcam library)
+*/
+
+
+/**
+
+\mainpage Overview
+
+
+\section sec_libwebcam libwebcam
+
+The Webcam Library \em libwebcam is designed to simplify the development of webcam applications, primarily on Linux but with an option to be ported to other platforms, in particular Solaris.
+It realizes part of what the unwritten Video4Linux user space library was always supposed to be: an easy to use library that shields its users from many of the difficulties and problems of using the V4L2 API directly.
+
+Today \em libwebcam provides the following core features:
+
+\li Enumeration of all cameras available in the system.
+\li Provide detailed information about the detected devices and their controls.
+\li Wrapper for the V4L2 frame format enumeration.
+\li Convenient access to device controls.
+\li Support for configuring the Linux UVC driver's dynamic controls (extension unit controls).
+
+In addition, the interface is prepared to handle device events ranging from newly detected cameras over control value changes to device button events.
+It is easy to add new features without breaking application compatibility and the addition of new controls or events is straightforward.
+
+
+\section sec_license License
+
+\em libwebcam is released under the <a href="http://www.gnu.org/copyleft/lgpl.html">GNU Lesser General Public License (LGPL)</a>.
+
+
+\section sec_introduction Latest version
+
+Note that the latest version of the Webcam Library and this API documentation can always be found on the <a href="http://www.quickcamteam.net/software/libwebcam/">QuickCam Team</a> website.
+
+
+\section sec_feedback Questions and feedback
+
+There is a forum for developers and users of the Webcam Library. Please feel free to post your questions and comments:
+
+<a href="http://forums.quickcamteam.net/forumdisplay.php?fid=7">QuickCam Team discussion forums</a>
+
+
+*/

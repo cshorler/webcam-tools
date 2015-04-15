@@ -134,20 +134,6 @@ install (
 # PACKAGING
 #
 
-# Prerequisites
-execute_process (
-	COMMAND				/usr/bin/dpkg --print-architecture
-	OUTPUT_VARIABLE		CPACK_DEBIAN_PACKAGE_ARCHITECTURE
-	RESULT_VARIABLE		EXECUTE_RESULT
-	OUTPUT_STRIP_TRAILING_WHITESPACE
-	ERROR_QUIET
-)
-if (EXECUTE_RESULT)
-	message(FATAL_ERROR "Unable to determine current dpkg architecture: ${EXECUTE_RESULT}")
-else (EXECUTE_RESULT)
-	message("** Debian package architecture: ${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
-endif (EXECUTE_RESULT)
-
 # Generic
 set (CPACK_GENERATOR					"TBZ2;DEB")
 set (CPACK_PACKAGE_NAME					"libwebcam")

@@ -15,7 +15,9 @@ project (LIBWEBCAM)
 
 add_library (webcam SHARED libwebcam.c dynctrl.c)
 
-set_target_properties (webcam PROPERTIES VERSION 0.2.1)
+set_target_properties (webcam PROPERTIES
+                       VERSION 0.3.0
+                       SOVERSION 0.3)
 
 
 

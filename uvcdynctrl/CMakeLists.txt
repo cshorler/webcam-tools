@@ -15,7 +15,7 @@ project (UVCDYNCTRL)
 
 add_executable (uvcdynctrl main.c controls.c cmdline.c)
 
-set_target_properties (uvcdynctrl PROPERTIES VERSION 0.2.1)
+set_target_properties (uvcdynctrl PROPERTIES VERSION 0.3.0)
 
 
 
